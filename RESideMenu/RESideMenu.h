@@ -64,6 +64,7 @@
 @property (assign, readwrite, nonatomic) IBInspectable CGFloat contentViewScaleValue;
 @property (assign, readwrite, nonatomic) IBInspectable CGFloat contentViewInLandscapeOffsetCenterX;
 @property (assign, readwrite, nonatomic) IBInspectable CGFloat contentViewInPortraitOffsetCenterX;
+@property (assign, readwrite, nonatomic) IBInspectable CGFloat contentViewOffsetCenterY;
 @property (assign, readwrite, nonatomic) IBInspectable CGFloat parallaxMenuMinimumRelativeValue;
 @property (assign, readwrite, nonatomic) IBInspectable CGFloat parallaxMenuMaximumRelativeValue;
 @property (assign, readwrite, nonatomic) IBInspectable CGFloat parallaxContentMinimumRelativeValue;

@@ -114,6 +114,7 @@
     _contentViewFadeOutAlpha = 1.0f;
     _contentViewInLandscapeOffsetCenterX = 30.f;
     _contentViewInPortraitOffsetCenterX  = 30.f;
+    _contentViewOffsetCenterY = 70.f;
     _contentViewScaleValue = 0.7f;
 }
 
@@ -290,9 +291,9 @@
         }
         
         if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_7_1) {
-            self.contentViewContainer.center = CGPointMake((UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? self.contentViewInLandscapeOffsetCenterX + CGRectGetWidth(self.view.frame) : self.contentViewInPortraitOffsetCenterX + CGRectGetWidth(self.view.frame)), self.contentViewContainer.center.y);
+            self.contentViewContainer.center = CGPointMake((UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? self.contentViewInLandscapeOffsetCenterX + CGRectGetWidth(self.view.frame) : self.contentViewInPortraitOffsetCenterX + CGRectGetWidth(self.view.frame)), self.contentViewOffsetCenterY + (CGRectGetHeight(self.view.frame) / 2.0));
         } else {
-            self.contentViewContainer.center = CGPointMake((UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? self.contentViewInLandscapeOffsetCenterX + CGRectGetHeight(self.view.frame) : self.contentViewInPortraitOffsetCenterX + CGRectGetWidth(self.view.frame)), self.contentViewContainer.center.y);
+            self.contentViewContainer.center = CGPointMake((UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? self.contentViewInLandscapeOffsetCenterX + CGRectGetHeight(self.view.frame) : self.contentViewInPortraitOffsetCenterX + CGRectGetWidth(self.view.frame)), self.contentViewOffsetCenterY + (CGRectGetHeight(self.view.frame) / 2.0));
         }
 
         self.menuViewContainer.alpha = !self.fadeMenuView ?: 1.0f;
@@ -547,6 +548,16 @@
     return YES;
 }
 
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+
+    UIPanGestureRecognizer *recognizer = (UIPanGestureRecognizer *)gestureRecognizer;
+    CGPoint velocity = [recognizer velocityInView:self.view];
+    if (fabs(velocity.y) > fabs(velocity.x)) {
+        return NO;
+    }
+    return YES;
+}
+
 #pragma mark -
 #pragma mark Pan gesture recognizer (Private)
 
@@ -622,6 +633,10 @@
                 point.x = MAX(0.0, point.x);
         }
         
+        if (self.contentViewContainer.frame.origin.y < 0) {
+            point.y -= self.contentViewContainer.frame.origin.y;
+        }
+        
         // Limit size
         //
         if (point.x < 0) {
@@ -648,10 +663,10 @@
         if (contentViewScale > 1) {
             CGFloat oppositeScale = (1 - (contentViewScale - 1));
             self.contentViewContainer.transform = CGAffineTransformMakeScale(oppositeScale, oppositeScale);
-            self.contentViewContainer.transform = CGAffineTransformTranslate(self.contentViewContainer.transform, point.x, 0);
+            self.contentViewContainer.transform = CGAffineTransformTranslate(self.contentViewContainer.transform, point.x, point.y);
         } else {
             self.contentViewContainer.transform = CGAffineTransformMakeScale(contentViewScale, contentViewScale);
-            self.contentViewContainer.transform = CGAffineTransformTranslate(self.contentViewContainer.transform, point.x, 0);
+            self.contentViewContainer.transform = CGAffineTransformTranslate(self.contentViewContainer.transform, point.x, point.y);
         }
         
         self.leftMenuViewController.view.hidden = self.contentViewContainer.frame.origin.x < 0;
